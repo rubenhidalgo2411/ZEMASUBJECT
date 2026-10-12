@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<title>Mis Apuntes · Biblioteca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap">
+<style>
+/* ============ Tokens (los mismos de tus apuntes) ============ */
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --card: #1a1a28;
+  --border: #2a2a40;
+  --neon-pink: #ff2d78;
+  --neon-cyan: #00f5d4;
+  --neon-yellow: #ffe600;
+  --neon-purple: #a855f7;
+  --text: #e8e8f0;
+  --muted: #6b6b8a;
+  --muted-text: #8e8eb0; /* mismo tono, un poco más claro para que el texto pequeño se lea bien */
+  --f-display: 'Syne', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --f-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); background: var(--bg); }
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(255,45,120,.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,245,212,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 60% 10%, rgba(168,85,247,.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 960px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+button { font-family: inherit; color: inherit; }
+
+/* ============ Cabecera ============ */
+header { text-align: center; padding: 60px 0 44px; }
+
+.header-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  color: #fff;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-family: var(--f-display);
+  font-size: clamp(32px, 6vw, 58px);
+  font-weight: 800;
+  line-height: 1.1;
+  padding-bottom: .06em;
+  background: linear-gradient(135deg, #fff 30%, var(--neon-cyan) 70%, var(--neon-pink) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.subtitle { color: var(--muted-text); font-size: 16px; max-width: 540px; margin: 0 auto 26px; line-height: 1.6; }
+
+.stats-bar { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.stat-pill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot.c { background: var(--neon-cyan); }
+.dot.p { background: var(--neon-pink); }
+.dot.y { background: var(--neon-yellow); }
+
+/* ============ Botones ============ */
+.glow-btn {
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  border: none;
+  color: #fff;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  box-shadow: 0 0 20px rgba(255,45,120,.3);
+}
+.glow-btn:hover { opacity: .9; transform: translateY(-1px); }
+.glow-btn:disabled { opacity: .5; cursor: progress; transform: none; }
+
+.ghost-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.ghost-btn:hover { border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0,245,212,.08); }
+.ghost-btn.small { padding: 7px 12px; font-size: 12px; }
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* ============ Zona de subida ============ */
+.drop {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  padding: 44px 24px 38px;
+  text-align: center;
+  transition: border-color .2s, background .2s, box-shadow .25s;
+}
+.drop.over {
+  border-style: solid;
+  border-color: var(--neon-cyan);
+  background: rgba(0,245,212,.06);
+  box-shadow: 0 0 0 4px rgba(0,245,212,.08), 0 0 56px rgba(0,245,212,.16);
+}
+
+.braces {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 38px;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(64px, 14vw, 104px);
+  line-height: 1;
+  margin-bottom: 18px;
+  transition: gap .35s cubic-bezier(.2, .8, .2, 1);
+}
+.braces .b {
+  background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.braces .b.r { background-image: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan)); }
+.braces .ext {
+  font-family: var(--f-mono);
+  font-weight: 700;
+  font-size: clamp(14px, 3vw, 18px);
+  color: var(--neon-cyan);
+  min-width: 6ch;
+}
+.braces .ext .go { display: none; color: var(--neon-yellow); }
+.drop.over .braces { gap: 8px; }
+.drop.over .braces .ext .rest { display: none; }
+.drop.over .braces .ext .go { display: inline; }
+
+.drop-title { font-family: var(--f-display); font-weight: 700; font-size: 20px; margin-bottom: 6px; }
+.drop-sub { color: var(--muted-text); font-size: 14px; margin-bottom: 22px; line-height: 1.5; }
+.drop-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+.paste { margin-top: 14px; }
+.paste textarea {
+  width: 100%;
+  min-height: 190px;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  color: var(--text);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.paste textarea::placeholder { color: var(--muted-text); }
+.paste textarea:focus-visible { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(0,245,212,.12); }
+.paste-actions { display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+/* ============ Informe de carga ============ */
+.report { margin-top: 18px; display: grid; gap: 10px; }
+.report-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.report-title { font-family: var(--f-mono); font-size: 11px; letter-spacing: 2px; color: var(--muted-text); text-transform: uppercase; }
+
+.res { border-radius: 12px; padding: 14px 16px; border: 1px solid; font-size: 13px; line-height: 1.6; }
+.res.ok   { background: rgba(0,245,212,.05); border-color: rgba(0,245,212,.25); }
+.res.warn { background: rgba(255,230,0,.06); border-color: rgba(255,230,0,.25); }
+.res.err  { background: rgba(255,45,120,.07); border-color: rgba(255,45,120,.28); }
+.res.info { background: var(--surface); border-color: var(--border); }
+.res-head { display: flex; align-items: baseline; gap: 10px; }
+.res-icon { font-family: var(--f-mono); font-weight: 700; flex-shrink: 0; width: 14px; text-align: center; }
+.res-title { font-family: var(--f-display); font-weight: 700; font-size: 15px; line-height: 1.35; overflow-wrap: anywhere; }
+.res.ok .res-icon, .res.ok .res-title { color: var(--neon-cyan); }
+.res.warn .res-icon, .res.warn .res-title { color: var(--neon-yellow); }
+.res.err .res-icon, .res.err .res-title { color: #ff8ab0; }
+.res.info .res-icon, .res.info .res-title { color: var(--text); }
+.res-file { font-family: var(--f-mono); font-size: 11px; color: var(--muted-text); margin: 4px 0 0 24px; overflow-wrap: anywhere; }
+.res-line, .res ul, .res-hint, .snippet { margin-left: 24px; }
+.res-line { margin-top: 8px; color: var(--text); }
+.res ul { margin-top: 8px; padding-left: 18px; color: var(--text); }
+.res ul li { margin-bottom: 3px; }
+.res-hint { margin-top: 8px; color: var(--muted-text); }
+.snippet {
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--neon-pink);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  overflow-x: auto;
+  white-space: pre;
+}
+.snippet .caret { color: var(--neon-pink); }
+
+/* ============ Biblioteca ============ */
+.lib-head { display: flex; align-items: center; gap: 14px; margin: 48px 0 18px; flex-wrap: wrap; }
+.lib-title { font-family: var(--f-display); font-size: 22px; font-weight: 700; }
+.lib-count {
+  background: rgba(255,45,120,.15);
+  color: var(--neon-pink);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,45,120,.3);
+}
+.lib-note { margin-left: auto; font-size: 12px; color: var(--muted-text); }
+
+.warn-box {
+  background: rgba(255,230,0,.06);
+  border: 1px solid rgba(255,230,0,.25);
+  color: #ffe97a;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 14px; }
+
+.subject-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color .2s, transform .15s;
+}
+.subject-card:hover { border-color: var(--neon-cyan); transform: translateY(-1px); }
+.subject-card.fresh { animation: fresh 1.8s ease-out 1; }
+@keyframes fresh {
+  0%   { border-color: var(--neon-cyan); box-shadow: 0 0 0 4px rgba(0,245,212,.18), 0 0 36px rgba(0,245,212,.3); }
+  100% { border-color: var(--border); box-shadow: 0 0 0 0 rgba(0,245,212,0); }
+}
+
+.subject-main {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 18px 18px 16px;
+  cursor: pointer;
+  border-radius: 16px;
+}
+.subject-top { display: flex; gap: 14px; align-items: flex-start; }
+.subject-text { min-width: 0; padding-right: 30px; }
+.subject-name { font-family: var(--f-display); font-weight: 700; font-size: 18px; line-height: 1.25; overflow-wrap: anywhere; }
+.subject-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-text);
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.subject-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.subject-stats .stat-pill { background: var(--surface); padding: 5px 12px; font-size: 12px; }
+.subject-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; font-size: 12px; color: var(--muted-text); }
+.open-cta { font-family: var(--f-display); font-weight: 700; font-size: 13px; color: var(--neon-cyan); }
+
+.subject-del {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted-text);
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.subject-del:hover { color: var(--neon-pink); border-color: rgba(255,45,120,.4); background: rgba(255,45,120,.08); }
+.subject-del svg { width: 17px; height: 17px; }
+
+.empty {
+  text-align: center;
+  color: var(--muted-text);
+  padding: 36px 18px;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.empty strong { color: var(--text); }
+
+/* ============ Visor de asignatura ============ */
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.search { position: relative; flex: 1 1 240px; display: block; }
+.search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted-text); pointer-events: none; }
+.search input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px 11px 38px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.search input::placeholder { color: var(--muted-text); }
+.search input:focus-visible { outline: none; border-color: var(--neon-cyan); box-shadow: 0 0 0 3px rgba(0,245,212,.12); }
+.result-count { font-family: var(--f-mono); font-size: 12px; color: var(--muted-text); min-height: 18px; margin-bottom: 12px; }
+
+.topic-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.nav-pills { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.topic-nav.clamp:not(.open) .nav-pills { max-height: 112px; overflow: hidden; }
+.nav-more { align-self: center; }
+
+.topic-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted-text);
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--f-body);
+  transition: all .2s;
+  max-width: min(100%, 260px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topic-btn:hover, .topic-btn.active { border-color: var(--neon-cyan); color: var(--neon-cyan); background: rgba(0,245,212,.08); }
+
+.section-header { display: flex; align-items: center; gap: 14px; margin: 40px 0 18px; }
+.section-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.section-title { font-family: var(--f-display); font-size: 22px; font-weight: 700; flex: 1; min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
+.section-count {
+  margin-left: auto;
+  white-space: nowrap;
+  background: rgba(255,45,120,.15);
+  color: var(--neon-pink);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,45,120,.3);
+}
+
+/* ---- tarjetas de concepto ---- */
+.concept-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color .2s, transform .15s;
+  animation: fadeInUp .3s ease both;
+}
+.concept-card:hover { border-color: var(--neon-cyan); transform: translateY(-1px); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.concept-header { padding: 18px 20px; cursor: pointer; display: flex; align-items: flex-start; gap: 14px; user-select: none; }
+.concept-header:focus-visible { outline-offset: -2px; border-radius: 16px; }
+.concept-q { flex: 1; min-width: 0; font-size: 15px; line-height: 1.5; font-weight: 500; overflow-wrap: anywhere; }
+.concept-q .tag { display: inline-block; font-family: var(--f-mono); font-size: 10px; line-height: 1.4; padding: 2px 8px; border-radius: 4px; margin-right: 8px; vertical-align: middle; }
+
+.tag-art      { background: rgba(255,45,120,.2);  color: var(--neon-pink);   border: 1px solid rgba(255,45,120,.3); }
+.tag-def      { background: rgba(0,245,212,.15);  color: var(--neon-cyan);   border: 1px solid rgba(0,245,212,.3); }
+.tag-key      { background: rgba(168,85,247,.2);  color: var(--neon-purple); border: 1px solid rgba(168,85,247,.3); }
+.tag-req      { background: rgba(255,230,0,.15);  color: var(--neon-yellow); border: 1px solid rgba(255,230,0,.3); }
+.tag-tabla    { background: rgba(0,200,255,.15);  color: #00c8ff;            border: 1px solid rgba(0,200,255,.3); }
+.tag-practica { background: rgba(100,255,150,.15); color: #64ff96;           border: 1px solid rgba(100,255,150,.3); }
+.tag-fuente   { background: rgba(255,100,50,.15); color: #ff6432;            border: 1px solid rgba(255,100,50,.3); }
+.tag-tip      { background: rgba(200,100,255,.15); color: #c864ff;           border: 1px solid rgba(200,100,255,.3); }
+
+.toggle-icon { color: var(--muted-text); font-size: 20px; line-height: 1; transition: transform .3s; flex-shrink: 0; margin-top: 2px; }
+.concept-card.open .toggle-icon { transform: rotate(45deg); color: var(--neon-cyan); }
+
+.concept-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+.concept-card.open .concept-body { display: block; }
+
+/* ---- bloques ---- */
+.answer-box { background: rgba(0,245,212,.05); border: 1px solid rgba(0,245,212,.2); border-radius: 10px; padding: 16px; margin-top: 14px; }
+.answer-label { font-family: var(--f-mono); font-size: 10px; letter-spacing: 2px; color: var(--neon-cyan); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.answer-label::before { content: ''; display: inline-block; width: 16px; height: 2px; background: var(--neon-cyan); flex-shrink: 0; }
+.answer-text { font-size: 14px; line-height: 1.7; color: var(--text); overflow-wrap: anywhere; }
+.answer-text strong, .mini-card strong { color: var(--neon-cyan); }
+.answer-text em, .mini-card em { color: var(--neon-yellow); font-style: normal; }
+
+.blockquote {
+  border-left: 3px solid var(--neon-purple);
+  background: rgba(168,85,247,.07);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #d0b8f0;
+  line-height: 1.7;
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.blockquote strong { color: #f0e4ff; }
+
+.error-box {
+  background: rgba(255,45,120,.07);
+  border: 1px solid rgba(255,45,120,.25);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #ff8ab0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.error-box::before {
+  content: '⚠ Atención';
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--neon-pink);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+.error-box strong { color: #ffc2d6; }
+
+.formula {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--neon-yellow);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-top: 10px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: var(--neon-yellow);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.formula .formula-title { font-size: 10px; letter-spacing: 2px; color: var(--muted-text); text-transform: uppercase; margin-bottom: 8px; }
+.formula strong { color: #fff; }
+
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; margin-top: 10px; }
+.mini-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.6; min-width: 0; overflow-wrap: anywhere; }
+.mini-card .mini-title { font-family: var(--f-display); font-size: 12px; font-weight: 700; color: var(--neon-pink); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+.table-wrap { overflow-x: auto; margin-top: 12px; border-radius: 10px; scrollbar-color: var(--border) transparent; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: rgba(0,245,212,.1);
+  color: var(--neon-cyan);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  min-width: 96px;
+}
+.data-table td { padding: 10px 14px; border-bottom: 1px solid rgba(42,42,64,.5); line-height: 1.5; color: var(--text); vertical-align: top; min-width: 96px; }
+.data-table tr:hover td { background: rgba(255,255,255,.02); }
+.data-table strong { color: var(--text); }
+
+/* texto enriquecido (HTML ya limpiado) */
+.rich p { margin: 0 0 .6em; }
+.rich p:last-child { margin-bottom: 0; }
+.rich ul, .rich ol { margin: 8px 0 8px 18px; }
+.rich li { margin-bottom: 4px; }
+.rich ul li::marker { color: var(--neon-cyan); }
+.rich ol li::marker { color: var(--neon-pink); }
+.rich code { font-family: var(--f-mono); font-size: .92em; background: rgba(255,255,255,.06); padding: 1px 5px; border-radius: 4px; }
+.rich mark { background: rgba(255,230,0,.15); color: var(--neon-yellow); padding: 1px 6px; border-radius: 4px; }
+.rich sup, .rich sub { font-size: .75em; }
+
+/* ============ Diálogo ============ */
+dialog {
+  margin: auto;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 0;
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 40px rgba(168,85,247,.12);
+}
+dialog::backdrop { background: rgba(10,10,15,.82); backdrop-filter: blur(3px); }
+.dlg-body { padding: 24px 24px 6px; }
+.dlg-title { font-family: var(--f-display); font-weight: 700; font-size: 20px; line-height: 1.25; margin-bottom: 10px; overflow-wrap: anywhere; }
+.dlg-text { font-size: 14px; line-height: 1.65; color: var(--muted-text); }
+.dlg-text p + p { margin-top: 8px; }
+.dlg-text strong { color: var(--text); font-weight: 600; }
+.dlg-actions { display: flex; gap: 10px; padding: 18px 24px 24px; }
+.dlg-actions.stack { flex-direction: column; gap: 8px; }
+.dlg-actions.row { justify-content: flex-end; flex-wrap: wrap; }
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.choice:hover { border-color: var(--neon-cyan); background: rgba(0,245,212,.06); }
+.choice .c-label { font-family: var(--f-display); font-weight: 700; font-size: 14px; }
+.choice .c-desc { font-size: 12px; color: var(--muted-text); line-height: 1.45; }
+.choice.primary { border-color: rgba(0,245,212,.45); background: rgba(0,245,212,.07); }
+.choice.primary .c-label { color: var(--neon-cyan); }
+.dlg-actions.row .choice { flex-direction: row; padding: 10px 18px; }
+.choice.danger { border-color: rgba(255,45,120,.4); }
+.choice.danger .c-label { color: var(--neon-pink); }
+.choice.danger:hover { border-color: var(--neon-pink); background: rgba(255,45,120,.08); }
+
+/* ============ Pantallas pequeñas ============ */
+@media (max-width: 640px) {
+  .container { padding: 24px 14px 40px; }
+  header { padding: 36px 0 30px; }
+  .subtitle { font-size: 15px; }
+  .drop { padding: 30px 16px 26px; }
+  .braces { gap: 22px; }
+  .lib-head { margin-top: 36px; }
+  .lib-note { margin-left: 0; width: 100%; }
+  .section-title { font-size: 18px; }
+  .section-header { gap: 10px; flex-wrap: wrap; }
+  .section-count { margin-left: 54px; }
+  .concept-header { padding: 14px; }
+  .concept-body { padding: 0 14px 16px; }
+  .answer-box { padding: 14px; }
+  .topic-nav { padding: 10px; }
+  .topic-btn { font-size: 12px; padding: 6px 10px; }
+  .stat-pill { padding: 6px 14px; font-size: 12px; }
+  .toolbar .ghost-btn { flex: 1 1 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ============ BIBLIOTECA ============ -->
+  <main id="view-library">
+    <header>
+      <div class="header-badge">⚡ Biblioteca de apuntes</div>
+      <h1>Mis Apuntes</h1>
+      <p class="subtitle">Sube el .json de cada asignatura y repásala en tarjetas desplegables.</p>
+    </header>
+
+    <section class="drop" id="drop" aria-label="Subir archivos JSON">
+      <div class="braces" aria-hidden="true">
+        <span class="b l">{</span>
+        <span class="ext"><span class="rest">.json</span><span class="go">suelta</span></span>
+        <span class="b r">}</span>
+      </div>
+      <p class="drop-title">Arrastra aquí tus archivos .json</p>
+      <p class="drop-sub">Uno por asignatura. Puedes subir varios a la vez.</p>
+      <div class="drop-actions">
+        <button type="button" class="glow-btn" id="btn-pick">Elegir archivos</button>
+        <button type="button" class="ghost-btn" id="btn-paste" aria-expanded="false" aria-controls="paste">Pegar JSON</button>
+      </div>
+      <input type="file" id="file" accept=".json,.txt,application/json,text/plain" multiple hidden>
+    </section>
+
+    <section class="paste" id="paste" hidden>
+      <label class="sr-only" for="paste-text">JSON de la asignatura</label>
+      <textarea id="paste-text" spellcheck="false" placeholder="Pega aquí el JSON completo que te dio la IA…"></textarea>
+      <div class="paste-actions">
+        <button type="button" class="ghost-btn" id="paste-cancel">Cancelar</button>
+        <button type="button" class="glow-btn" id="paste-load">Cargar JSON</button>
+      </div>
+    </section>
+
+    <section class="report" id="report" aria-live="polite" hidden></section>
+
+    <div class="lib-head" id="lib-head" hidden>
+      <h2 class="lib-title">Mis asignaturas</h2>
+      <span class="lib-count" id="lib-count">0</span>
+      <span class="lib-note">Guardadas en este navegador</span>
+    </div>
+    <div class="warn-box" id="storage-warning" hidden>Este navegador no deja guardar datos de la página, así que las asignaturas solo durarán hasta que cierres la pestaña. Vuelve a subir los .json cuando las necesites.</div>
+    <div class="lib-grid" id="lib-grid"></div>
+    <p class="empty" id="lib-empty" hidden><strong>Todavía no hay asignaturas.</strong><br>Arrastra arriba el .json que te genera la IA con el prompt de apuntes.</p>
+  </main>
+
+  <!-- ============ ASIGNATURA ============ -->
+  <main id="view-subject" hidden>
+    <button type="button" class="ghost-btn back" id="btn-back"><span aria-hidden="true">←</span> Mis asignaturas</button>
+
+    <header>
+      <div class="header-badge">⚡ Modo Repaso</div>
+      <h1 id="s-title"></h1>
+      <p class="subtitle" id="s-sub"></p>
+      <div class="stats-bar" id="s-stats"></div>
+    </header>
+
+    <div class="toolbar">
+      <label class="search">
+        <span class="sr-only">Buscar en esta asignatura</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="Buscar en esta asignatura…" autocomplete="off" spellcheck="false">
+      </label>
+      <button type="button" class="ghost-btn" id="btn-open-all">Abrir todo</button>
+      <button type="button" class="ghost-btn" id="btn-close-all">Cerrar todo</button>
+    </div>
+    <div class="result-count" id="result-count" aria-live="polite"></div>
+
+    <nav class="topic-nav" id="nav" aria-label="Temas">
+      <div class="nav-pills" id="nav-pills"></div>
+      <button type="button" class="ghost-btn small nav-more" id="nav-more" hidden></button>
+    </nav>
+
+    <div id="sections"></div>
+    <p class="empty" id="no-results" hidden></p>
+  </main>
+
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <form method="dialog">
+    <div class="dlg-body">
+      <h2 class="dlg-title" id="dlg-title"></h2>
+      <div class="dlg-text" id="dlg-text"></div>
+    </div>
+    <div class="dlg-actions" id="dlg-actions"></div>
+  </form>
+</dialog>
+
+<script>
+/* =====================================================================
+   NÚCLEO (sin DOM)
+   Lee el texto de un JSON de apuntes, lo repara si la IA lo dejó mal,
+   lo valida contra la estructura del prompt y lo deja listo para guardar.
+   ===================================================================== */
+
+const TAG_COLORS = ['art', 'def', 'key', 'req', 'tabla', 'practica', 'fuente', 'tip'];
+const DEFAULT_ICON_BG = 'rgba(0,245,212,.12)';
+const COLOR_RE = /^(?:rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(?:,\s*(?:0|1|0?\.\d+|\d{1,3}%?)\s*)?\)|hsla?\([^()]{3,40}\)|#[0-9a-f]{3,8})$/i;
+
+class LoadError extends Error {
+  constructor(message, extra) {
+    super(message);
+    this.name = 'LoadError';
+    if (extra) Object.assign(this, extra);
+  }
+}
+
+/* ---------------------------- texto ---------------------------- */
+const ENTITIES = { nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+
+function decodeEntities(s) {
+  return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, e) => {
+    if (e[0] === '#') {
+      const code = e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+      return code > 0 && code < 0x110000 ? String.fromCodePoint(code) : m;
+    }
+    const v = ENTITIES[e.toLowerCase()];
+    return v === undefined ? m : v;
+  });
+}
+
+const str = v => (typeof v === 'string' ? v : typeof v === 'number' || typeof v === 'boolean' ? String(v) : '');
+const stripTags = s => s.replace(/<br\s*\/?>/gi, ' ').replace(/<\/(?:p|div|li)>/gi, ' ').replace(/<[^>]*>/g, '');
+const plain = v => decodeEntities(stripTags(str(v))).replace(/\s+/g, ' ').trim();
+const norm = v => plain(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const slug = v => norm(v).replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 40);
+const short = (s, n = 40) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+
+/** «null», vacío o undefined → null (regla 10 del prompt). */
+function optText(v) {
+  const s = plain(v);
+  return s && !/^(?:null|undefined)$/i.test(s) ? s : null;
+}
+
+function firstGrapheme(s) {
+  if (!s) return '';
+  try {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      const it = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(s)[Symbol.iterator]().next();
+      return it.done ? '' : it.value.segment;
+    }
+  } catch (_) { /* usamos el plan B */ }
+  return Array.from(s)[0] || '';
+}
+
+/* ------------------ posición del error (línea/columna) ------------------ */
+function lineCol(text, pos) {
+  let line = 1;
+  let last = -1;
+  for (let k = 0; k < pos && k < text.length; k++) {
+    if (text.charCodeAt(k) === 10) { line++; last = k; }
+  }
+  return { line, col: pos - last };
+}
+
+function snippetAt(text, pos) {
+  const start = text.lastIndexOf('\n', pos - 1) + 1;
+  let end = text.indexOf('\n', pos);
+  if (end === -1) end = text.length;
+  const line = text.slice(start, end).replace(/\r$/, '');
+  const col = Math.min(pos - start, line.length);
+  const W = 60;
+  const from = Math.max(0, col - W);
+  const to = Math.min(line.length, col + W);
+  const pre = from > 0 ? '…' : '';
+  const post = to < line.length ? '…' : '';
+  const shown = line.slice(from, to).replace(/\t/g, ' ');
+  return { text: pre + shown + post, caret: ' '.repeat(pre.length + (col - from)) + '^' };
+}
+
+/* ------------------------------------------------------------------
+   Reparación que conserva la longitud del texto (así las posiciones
+   de error siguen valiendo para el archivo original).
+   Solo se usa cuando JSON.parse falla; un JSON válido no pasa por aquí.
+   ------------------------------------------------------------------ */
+function repairJSON(text) {
+  const n = text.length;
+  const fixes = [];
+  const fix = (label, pos) => fixes.push({ label, pos });
+  let out = '';
+  let i = 0;
+  let inStr = false;
+  let strayOpen = false;
+
+  const skipSpace = from => {
+    let j = from;
+    while (j < n && (text[j] === ' ' || text[j] === '\n' || text[j] === '\r' || text[j] === '\t')) j++;
+    return j;
+  };
+  const nextSignificant = from => {
+    const j = skipSpace(from);
+    return j < n ? text[j] : '';
+  };
+  const canFollowString = ch => ch === '' || ch === ',' || ch === ':' || ch === '}' || ch === ']';
+
+  while (i < n) {
+    const c = text[i];
+    if (inStr) {
+      if (c === '\\') {
+        const x = text[i + 1];
+        if (x !== undefined && '"\\/bfnrtu'.includes(x)) { out += c + x; i += 2; continue; }
+        fix('barras invertidas sueltas', i);
+        out += ' '; i++; continue;
+      }
+      if (c === '"') {
+        const j = skipSpace(i + 1);
+        const nx = j < n ? text[j] : '';
+        let closing = canFollowString(nx);
+        // «"a" "b"»: si la comilla siguiente tampoco podría cerrar un texto, esta es
+        // el cierre de verdad y lo que falla es la estructura (falta una coma o « : »).
+        if (!closing && nx === '"' && !canFollowString(nextSignificant(j + 1))) closing = true;
+        if (closing) { inStr = false; out += c; i++; continue; }
+        // Una comilla que ninguna estructura JSON puede seguir: era parte del texto.
+        fix('comillas dobles sin escapar dentro de textos', i);
+        out += strayOpen ? '»' : '«';
+        strayOpen = !strayOpen;
+        i++; continue;
+      }
+      if (c < ' ') { fix('saltos de línea dentro de textos', i); out += ' '; i++; continue; }
+      out += c; i++; continue;
+    }
+    if (c === '"') { inStr = true; strayOpen = false; out += c; i++; continue; }
+    if (c === '/' && text[i + 1] === '/') {
+      fix('comentarios', i);
+      while (i < n && text[i] !== '\n') { out += ' '; i++; }
+      continue;
+    }
+    if (c === '/' && text[i + 1] === '*') {
+      fix('comentarios', i);
+      const end = text.indexOf('*/', i + 2);
+      const stop = end === -1 ? n : end + 2;
+      while (i < stop) { out += text[i] === '\n' ? '\n' : ' '; i++; }
+      continue;
+    }
+    if (c === ',') {
+      const nx = nextSignificant(i + 1);
+      if (nx === '}' || nx === ']') { fix('comas sobrantes', i); out += ' '; i++; continue; }
+    }
+    out += c; i++;
+  }
+  return { text: out, fixes };
+}
+
+/* ------------------------------------------------------------------
+   Validador JSON propio: localiza el primer error con línea y columna
+   igual en todos los navegadores, y distingue «cortado» de «mal escrito».
+   ------------------------------------------------------------------ */
+function scanJSON(text, { allowTrailing = false } = {}) {
+  const n = text.length;
+  let i = 0;
+  const open = [];
+  const NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
+
+  const stop = (pos, msg, eof = false) => {
+    const e = new Error(msg);
+    e.pos = pos;
+    e.eof = eof;
+    throw e;
+  };
+  const ws = () => {
+    while (i < n) {
+      const c = text.charCodeAt(i);
+      if (c === 32 || c === 10 || c === 13 || c === 9) i++; else break;
+    }
+  };
+  const string = () => {
+    i++;
+    while (i < n) {
+      const c = text[i];
+      if (c === '"') { i++; return; }
+      if (c === '\\') {
+        const x = text[i + 1];
+        if (x === undefined) stop(n, 'texto sin cerrar', true);
+        if (x === 'u') {
+          if (!/^[0-9a-fA-F]{4}$/.test(text.slice(i + 2, i + 6))) stop(i, 'Código \\u inválido dentro de un texto');
+          i += 6; continue;
+        }
+        if (!'"\\/bfnrt'.includes(x)) stop(i, 'Barra invertida inválida dentro de un texto');
+        i += 2; continue;
+      }
+      if (c < ' ') stop(i, 'Salto de línea o tabulación sin escapar dentro de un texto');
+      i++;
+    }
+    stop(n, 'texto sin cerrar', true);
+  };
+  const value = () => {
+    ws();
+    if (i >= n) stop(n, 'valor', true);
+    const c = text[i];
+    if (c === '{') return object();
+    if (c === '[') return array();
+    if (c === '"') return string();
+    if (c === '-' || (c >= '0' && c <= '9')) {
+      NUM.lastIndex = i;
+      const m = NUM.exec(text);
+      if (!m) stop(i, 'Número mal escrito');
+      i += m[0].length;
+      return;
+    }
+    for (const lit of ['true', 'false', 'null']) {
+      if (text.startsWith(lit, i)) { i += lit.length; return; }
+    }
+    stop(i, 'Se esperaba un valor (texto entre comillas, número, lista u objeto)');
+  };
+  const object = () => {
+    open.push('{'); i++; ws();
+    if (text[i] === '}') { i++; open.pop(); return; }
+    for (;;) {
+      ws();
+      if (i >= n) stop(n, 'propiedad', true);
+      if (text[i] !== '"') stop(i, 'Se esperaba el nombre de una propiedad entre comillas dobles');
+      string(); ws();
+      if (i >= n) stop(n, 'dos puntos', true);
+      if (text[i] !== ':') stop(i, 'Faltan los dos puntos después del nombre de la propiedad');
+      i++; value(); ws();
+      if (i >= n) stop(n, 'coma o cierre', true);
+      if (text[i] === ',') { i++; continue; }
+      if (text[i] === '}') { i++; open.pop(); return; }
+      stop(i, 'Se esperaba una coma o el cierre « } » del objeto');
+    }
+  };
+  const array = () => {
+    open.push('['); i++; ws();
+    if (text[i] === ']') { i++; open.pop(); return; }
+    for (;;) {
+      value(); ws();
+      if (i >= n) stop(n, 'coma o cierre', true);
+      if (text[i] === ',') { i++; continue; }
+      if (text[i] === ']') { i++; open.pop(); return; }
+      stop(i, 'Se esperaba una coma o el cierre « ] » de la lista');
+    }
+  };
+
+  try {
+    value();
+    if (!allowTrailing) {
+      ws();
+      if (i < n) stop(i, 'Hay texto sobrante después del JSON');
+    }
+    return { end: i };
+  } catch (e) {
+    if (e.pos === undefined) throw e;
+    return { error: { pos: e.pos, msg: e.message, eof: e.eof, open: open.slice() } };
+  }
+}
+
+function syntaxError(original, offset, err) {
+  if (err.eof) {
+    const braces = err.open.filter(c => c === '{').length;
+    const brackets = err.open.length - braces;
+    const falta = [];
+    if (braces) falta.push(plural(braces, 'llave', 'llaves'));
+    if (brackets) falta.push(plural(brackets, 'corchete', 'corchetes'));
+    return new LoadError('El JSON está cortado: el texto termina antes de cerrarse.', {
+      kind: 'truncated',
+      detail: falta.length ? 'Faltan por cerrar ' + falta.join(' y ') + '.' : null,
+      hint: 'Pide a la IA que continúe y sube la siguiente parte; se combinará con esta. Si ya tienes todas las partes, súbelas juntas.',
+      snippet: snippetAt(original, original.replace(/\s+$/, '').length),
+    });
+  }
+  const abs = offset + err.pos;
+  const { line, col } = lineCol(original, abs);
+  const before = original.slice(0, abs).replace(/\s+$/, '').slice(-1);
+  let hint = null;
+  if (/coma o el cierre/.test(err.msg) && before === '"') {
+    hint = 'Suele deberse a una comilla doble dentro de un texto. Escríbela como &quot; o cámbiala por comillas «latinas».';
+  } else if (/nombre de una propiedad/.test(err.msg)) {
+    hint = 'Revisa si sobra una coma o si falta una comilla justo antes de ese punto.';
+  }
+  return new LoadError('El JSON tiene un error de formato.', {
+    kind: 'syntax',
+    detail: 'Línea ' + line + ', columna ' + col + ': ' + err.msg + '.',
+    hint,
+    snippet: snippetAt(original, abs),
+  });
+}
+
+/** Texto → { value, notes, continues } o LoadError con explicación. */
+function readJSONText(input) {
+  const original = String(input).replace(/^\uFEFF/, '');
+  if (!original.trim()) throw new LoadError('El archivo está vacío.', { kind: 'empty' });
+
+  try {
+    return { value: JSON.parse(original), notes: [], continues: false };
+  } catch (_) { /* seguimos con la lectura tolerante */ }
+
+  const start = original.search(/[\[{]/);
+  if (start === -1) {
+    throw new LoadError('No se encontró ningún JSON en el texto (no hay llaves { } ni corchetes [ ]).', { kind: 'nojson' });
+  }
+  const body = original.slice(start);
+  const rep = repairJSON(body);
+  const scan = scanJSON(rep.text, { allowTrailing: true });
+  if (scan.error) throw syntaxError(original, start, scan.error);
+
+  let value;
+  try {
+    value = JSON.parse(rep.text.slice(0, scan.end));
+  } catch (e) {
+    throw new LoadError('El JSON no es válido: ' + e.message, { kind: 'syntax' });
+  }
+
+  const notes = [];
+  const counts = new Map();
+  rep.fixes.filter(f => f.pos < scan.end).forEach(f => counts.set(f.label, (counts.get(f.label) || 0) + 1));
+  if (counts.size) {
+    notes.push('Se corrigió automáticamente: ' + [...counts].map(([l, c]) => l + ' (' + c + ')').join(', ') + '.');
+  }
+  const lead = original.slice(0, start).replace(/```(?:json)?/gi, '').trim();
+  const trail = body.slice(scan.end);
+  const trailClean = trail.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/```/g, '').trim();
+  if (lead || trailClean) notes.push('Se ignoró el texto que había fuera del JSON.');
+  return { value, notes, continues: /contin[uú]a/i.test(trail) };
+}
+
+/* ------------------------- estructura ------------------------- */
+const isObj = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+/** Cualquier raíz razonable → lista de asignaturas «en bruto». */
+function subjectsFromRoot(root, fallbackName) {
+  if (Array.isArray(root)) {
+    if (root.length && root.every(x => isObj(x) && Array.isArray(x.temas))) return root;
+    if (root.length && root.every(x => isObj(x) && Array.isArray(x.conceptos))) {
+      return [{ asignatura: fallbackName, temas: root }];
+    }
+    throw new LoadError('Este JSON es una lista, pero no contiene asignaturas con «temas».', { kind: 'structure' });
+  }
+  if (isObj(root)) {
+    if (Array.isArray(root.temas)) return [root];
+    if (Array.isArray(root.asignaturas) && root.asignaturas.length) return root.asignaturas;
+    if (Array.isArray(root.conceptos)) return [{ asignatura: fallbackName, temas: [root] }];
+  }
+  throw new LoadError('Falta la lista «temas».', {
+    kind: 'structure',
+    hint: 'El JSON debe tener «asignatura», «subtitulo» y una lista «temas», como en el prompt de apuntes.',
+  });
+}
+
+function normalizeBlock(b) {
+  if (!isObj(b)) return { skip: 'no es un objeto; se omite.' };
+  let tipo = str(b.tipo).trim().toLowerCase();
+  let note = null;
+  if (!tipo) {
+    if (Array.isArray(b.columnas)) tipo = 'grid2';
+    else if (Array.isArray(b.filas)) tipo = 'tabla';
+    else if (typeof b.html === 'string') tipo = 'answer';
+  }
+  switch (tipo) {
+    case 'answer': case 'blockquote': case 'error': case 'formula': {
+      const html = str(b.html);
+      if (!html.trim()) return { skip: 'el bloque «' + tipo + '» no tiene texto en «html»; se omite.' };
+      const block = { tipo, html };
+      if (tipo === 'answer') block.label = optText(b.label);
+      if (tipo === 'formula') block.titulo = optText(b.titulo);
+      return { block, note };
+    }
+    case 'grid2': {
+      const columnas = (Array.isArray(b.columnas) ? b.columnas : [])
+        .filter(isObj)
+        .map(c => ({ titulo: optText(c.titulo), html: str(c.html) }))
+        .filter(c => c.html.trim() || c.titulo);
+      if (!columnas.length) return { skip: 'el bloque «grid2» no tiene columnas con contenido; se omite.' };
+      return { block: { tipo, columnas } };
+    }
+    case 'tabla': {
+      const cabeceras = Array.isArray(b.cabeceras) ? b.cabeceras.map(str) : [];
+      const filas = (Array.isArray(b.filas) ? b.filas : [])
+        .map(r => (Array.isArray(r) ? r.map(str) : typeof r === 'string' ? [r] : null))
+        .filter(r => r && r.some(c => c.trim()));
+      if (!filas.length) return { skip: 'el bloque «tabla» no tiene filas; se omite.' };
+      return { block: { tipo, cabeceras, filas } };
+    }
+    default: {
+      // Un tipo desconocido con texto no se pierde: se muestra como respuesta.
+      const html = str(b.html);
+      if (html.trim()) {
+        return { block: { tipo: 'answer', html, label: optText(b.label) }, note: 'tipo de bloque desconocido («' + short(tipo || 'vacío', 20) + '»); se mostró como respuesta.' };
+      }
+      return { skip: 'tipo de bloque desconocido («' + short(tipo || 'vacío', 20) + '»); se omite.' };
+    }
+  }
+}
+
+function computeStats(subject) {
+  let conceptos = 0;
+  let trampas = 0;
+  for (const t of subject.temas) {
+    conceptos += t.conceptos.length;
+    for (const c of t.conceptos) for (const b of c.bloques) if (b.tipo === 'error') trampas++;
+  }
+  return { temas: subject.temas.length, conceptos, trampas };
+}
+
+/** Asignatura en bruto → { subject, warnings } limpia, o LoadError. */
+function normalizeSubject(raw, fallbackName) {
+  if (!isObj(raw)) throw new LoadError('Una de las asignaturas no es un objeto válido.', { kind: 'structure' });
+  if (!Array.isArray(raw.temas)) {
+    throw new LoadError('Falta la lista «temas»' + (raw.asignatura ? ' en «' + short(plain(raw.asignatura)) + '»' : '') + '.', { kind: 'structure' });
+  }
+
+  const warnings = [];
+  const warn = (where, msg) => warnings.push(where ? where + ': ' + msg : msg);
+
+  let asignatura = plain(raw.asignatura);
+  if (!asignatura) {
+    asignatura = plain(fallbackName) || 'Asignatura sin nombre';
+    warn('', 'falta «asignatura»; se usará «' + asignatura + '».');
+  }
+  const subtitulo = plain(raw.subtitulo);
+
+  const usedIds = new Set();
+  const temas = [];
+  const badColors = new Set();
+
+  raw.temas.forEach((t, ti) => {
+    const pos = 'Tema ' + (ti + 1);
+    if (!isObj(t)) { warn(pos, 'no es un objeto; se omite.'); return; }
+    if (!Array.isArray(t.conceptos)) { warn(pos, 'no tiene la lista «conceptos»; se omite.'); return; }
+
+    const titulo = plain(t.titulo) || plain(t.navLabel) || pos;
+    const where = pos + ' «' + short(titulo, 34) + '»';
+
+    let id = slug(t.id) || 't' + (ti + 1);
+    for (let k = 2; usedIds.has(id); k++) id = (slug(t.id) || 't' + (ti + 1)) + '_' + k;
+    usedIds.add(id);
+
+    const bg = str(t.iconBg).trim();
+    const conceptos = [];
+    t.conceptos.forEach((c, ci) => {
+      const cw = where + ' › concepto ' + (ci + 1);
+      if (!isObj(c)) { warn(cw, 'no es un objeto; se omite.'); return; }
+      if (!Array.isArray(c.bloques)) { warn(cw, 'no tiene la lista «bloques»; se omite.'); return; }
+
+      let pregunta = str(c.pregunta).trim();
+      if (!pregunta) { pregunta = 'Concepto ' + (ci + 1); warn(cw, 'no tiene «pregunta».'); }
+
+      let tagColor = str(c.tagColor).trim().toLowerCase();
+      if (!TAG_COLORS.includes(tagColor)) {
+        if (tagColor) badColors.add(tagColor);
+        tagColor = 'def';
+      }
+
+      const bloques = [];
+      c.bloques.forEach((b, bi) => {
+        const r = normalizeBlock(b);
+        const bw = cw + ' › bloque ' + (bi + 1);
+        if (r.skip) { warn(bw, r.skip); return; }
+        if (r.note) warn(bw, r.note);
+        bloques.push(r.block);
+      });
+      if (!bloques.length) { warn(cw, 'no tiene ningún bloque con contenido; se omite.'); return; }
+
+      conceptos.push({ tag: plain(c.tag), tagColor, pregunta, bloques });
+    });
+    if (!conceptos.length) { warn(where, 'se quedó sin conceptos válidos; se omite.'); return; }
+
+    temas.push({
+      id,
+      titulo,
+      navLabel: plain(t.navLabel) || titulo,
+      icono: firstGrapheme(plain(t.icono)) || '📖',
+      iconBg: COLOR_RE.test(bg) ? bg : DEFAULT_ICON_BG,
+      conceptos,
+    });
+  });
+
+  if (!temas.length) {
+    throw new LoadError('«' + short(asignatura) + '» no tiene ningún tema con contenido válido.', { kind: 'structure', warnings });
+  }
+  if (badColors.size) {
+    warn('', 'colores de etiqueta desconocidos (' + [...badColors].map(c => '«' + short(c, 14) + '»').join(', ') + '); se usó «def».');
+  }
+
+  const subject = { asignatura, subtitulo, temas };
+  subject.stats = computeStats(subject);
+  return { subject, warnings };
+}
+
+/* ------------------------- biblioteca ------------------------- */
+const nameKey = name => norm(name);
+
+function newId(name) {
+  return (slug(name).slice(0, 24) || 'asignatura') + '-' + Math.random().toString(36).slice(2, 7);
+}
+
+function uniqueName(name, takenKeys) {
+  let candidate = name;
+  for (let k = 2; takenKeys.has(nameKey(candidate)); k++) candidate = name + ' (' + k + ')';
+  return candidate;
+}
+
+/** Un tema entrante coincide con uno guardado por (id + título) o, si no, por título. */
+function matchTema(temas, t) {
+  const nt = norm(t.titulo);
+  let i = temas.findIndex(x => x.id === t.id && norm(x.titulo) === nt);
+  if (i === -1) i = temas.findIndex(x => norm(x.titulo) === nt);
+  return i;
+}
+
+function uniqueTemaId(temas, id) {
+  const used = new Set(temas.map(t => t.id));
+  let candidate = id;
+  for (let k = 2; used.has(candidate); k++) candidate = id + '_' + k;
+  return candidate;
+}
+
+function planMerge(base, incoming) {
+  const temas = base.temas.slice();
+  let added = 0;
+  let replaced = 0;
+  for (const t of incoming.temas) {
+    const i = matchTema(temas, t);
+    if (i === -1) { temas.push({ ...t, id: uniqueTemaId(temas, t.id) }); added++; } else { temas[i] = t; replaced++; }
+  }
+  return { added, replaced, temas };
+}
+
+function mergeSubjects(base, incoming) {
+  const { added, replaced, temas } = planMerge(base, incoming);
+  const subject = { ...base, subtitulo: incoming.subtitulo || base.subtitulo, temas };
+  subject.stats = computeStats(subject);
+  return { subject, added, replaced };
+}
+
+/* =====================================================================
+   APP (interfaz). Usa el núcleo de arriba.
+   ===================================================================== */
+(() => {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const MAX_BYTES = 25 * 1024 * 1024;
+  const AUTO_OPEN_MAX = 30;
+
+  const E = {
+    library: $('view-library'), subject: $('view-subject'),
+    drop: $('drop'), file: $('file'), pick: $('btn-pick'),
+    pasteBtn: $('btn-paste'), pastePanel: $('paste'), pasteText: $('paste-text'),
+    pasteLoad: $('paste-load'), pasteCancel: $('paste-cancel'),
+    report: $('report'), storageWarn: $('storage-warning'),
+    libHead: $('lib-head'), libCount: $('lib-count'), grid: $('lib-grid'), empty: $('lib-empty'),
+    back: $('btn-back'), title: $('s-title'), sub: $('s-sub'), stats: $('s-stats'),
+    q: $('q'), count: $('result-count'), openAll: $('btn-open-all'), closeAll: $('btn-close-all'),
+    nav: $('nav'), pills: $('nav-pills'), more: $('nav-more'),
+    sections: $('sections'), none: $('no-results'),
+    dlg: $('dlg'), dlgTitle: $('dlg-title'), dlgText: $('dlg-text'), dlgActions: $('dlg-actions'),
+  };
+
+  const S = {
+    lib: new Map(),      // id → asignatura
+    fresh: new Set(),    // ids recién añadidos (para resaltarlos una vez)
+    busy: false,
+    subject: null,
+    topic: 'all',
+    query: '',
+    sections: [],        // { id, el, cards: [{ el, search }] }
+    cards: [],           // todas las tarjetas del visor
+    auto: new Set(),     // tarjetas abiertas por la búsqueda
+  };
+
+  /* ------------------------- utilidades de DOM ------------------------- */
+  function h(tag, props, ...kids) {
+    const e = document.createElement(tag);
+    if (props) {
+      for (const [k, v] of Object.entries(props)) {
+        if (v == null || v === false) continue;
+        if (k === 'class') e.className = v;
+        else if (k === 'text') e.textContent = v;
+        else e.setAttribute(k, v === true ? '' : v);
+      }
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      e.append(typeof kid === 'object' ? kid : document.createTextNode(String(kid)));
+    }
+    return e;
+  }
+
+  const debounce = (fn, ms) => { let t = 0; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+  const fmtDate = ts => {
+    try { return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(ts)); } catch (_) { return ''; }
+  };
+
+  /* --------------------------------------------------------------------
+     HTML de los apuntes → solo etiquetas permitidas, sin atributos.
+     Lo que llega en el JSON nunca se inserta tal cual.
+     -------------------------------------------------------------------- */
+  const DROP_TAGS = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'SVG', 'MATH', 'TEMPLATE', 'NOSCRIPT', 'LINK', 'META', 'TITLE', 'FORM', 'INPUT', 'BUTTON', 'TEXTAREA', 'SELECT', 'IMG', 'AUDIO', 'VIDEO', 'CANVAS']);
+  const KEEP_TAGS = new Set(['STRONG', 'B', 'EM', 'I', 'U', 'UL', 'OL', 'LI', 'BR', 'P', 'DIV', 'SPAN', 'SUP', 'SUB', 'CODE', 'MARK', 'SMALL']);
+
+  function cleanInto(target, source) {
+    for (const node of Array.from(source.childNodes)) {
+      if (node.nodeType === 3) { target.appendChild(document.createTextNode(node.nodeValue)); continue; }
+      if (node.nodeType !== 1) continue;
+      const tag = node.tagName.toUpperCase();
+      if (DROP_TAGS.has(tag)) continue;
+      if (KEEP_TAGS.has(tag)) {
+        const copy = document.createElement(tag.toLowerCase());
+        cleanInto(copy, node);
+        target.appendChild(copy);
+      } else {
+        cleanInto(target, node);
+      }
+    }
+  }
+
+  function rich(html) {
+    const s = String(html == null ? '' : html);
+    if (!/[<&]/.test(s)) return document.createTextNode(s);
+    const doc = new DOMParser().parseFromString('<!doctype html><body>' + s, 'text/html');
+    const frag = document.createDocumentFragment();
+    cleanInto(frag, doc.body);
+    return frag;
+  }
+
+  /* ----------------------------- almacenamiento ----------------------------- */
+  const Store = (() => {
+    const DB_NAME = 'mis-apuntes';
+    const STORE = 'asignaturas';
+    let db = null;
+    let persistent = false;
+
+    const open = () => new Promise((resolve, reject) => {
+      let req;
+      try { req = indexedDB.open(DB_NAME, 1); } catch (e) { reject(e); return; }
+      req.onupgradeneeded = () => { try { req.result.createObjectStore(STORE, { keyPath: 'id' }); } catch (_) { /* ya existe */ } };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('indexedDB'));
+      req.onblocked = () => reject(new Error('bloqueado'));
+    });
+
+    const run = (mode, fn) => new Promise((resolve, reject) => {
+      let tx;
+      try { tx = db.transaction(STORE, mode); } catch (e) { reject(e); return; }
+      let req;
+      try { req = fn(tx.objectStore(STORE)); } catch (e) { reject(e); return; }
+      tx.oncomplete = () => resolve(req ? req.result : undefined);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error || new Error('cancelado'));
+    });
+
+    return {
+      get persistent() { return persistent; },
+      async init() {
+        try {
+          db = await open();
+          persistent = true;
+          return (await run('readonly', s => s.getAll())) || [];
+        } catch (_) {
+          persistent = false;
+          db = null;
+          return [];
+        }
+      },
+      /** true si quedó guardada en el navegador */
+      async put(rec) {
+        if (!persistent) return false;
+        try { await run('readwrite', s => s.put(rec)); return true; } catch (_) { return false; }
+      },
+      async remove(id) {
+        if (!persistent) return;
+        try { await run('readwrite', s => s.delete(id)); } catch (_) { /* nada que hacer */ }
+      },
+    };
+  })();
+
+  /* ------------------------------- diálogo ------------------------------- */
+  function ask({ title, text, choices }) {
+    return new Promise(resolve => {
+      if (typeof E.dlg.showModal !== 'function') {
+        const msg = title + '\n\n' + (Array.isArray(text) ? text.map(n => n.textContent).join('\n') : String(text));
+        resolve(window.confirm(msg) ? choices[0].id : null);
+        return;
+      }
+      E.dlgTitle.textContent = title;
+      E.dlgText.replaceChildren(...[].concat(text));
+      E.dlgActions.className = 'dlg-actions ' + (choices.some(c => c.desc) ? 'stack' : 'row');
+      E.dlgActions.replaceChildren(...choices.map(c =>
+        h('button', { type: 'submit', value: c.id, class: 'choice ' + (c.kind || '') },
+          h('span', { class: 'c-label', text: c.label }),
+          c.desc ? h('span', { class: 'c-desc', text: c.desc }) : null)));
+      E.dlg.returnValue = '';
+      const done = () => { E.dlg.removeEventListener('close', done); resolve(E.dlg.returnValue || null); };
+      E.dlg.addEventListener('close', done);
+      E.dlg.showModal();
+    });
+  }
+  E.dlg.addEventListener('click', e => { if (e.target === E.dlg) E.dlg.close(); });
+
+  /* ------------------------------ vistas ------------------------------ */
+  function showView(name) {
+    E.library.hidden = name !== 'library';
+    E.subject.hidden = name !== 'subject';
+    document.title = name === 'subject' && S.subject ? S.subject.asignatura + ' · Mis Apuntes' : 'Mis Apuntes · Biblioteca';
+    window.scrollTo(0, 0);
+  }
+
+  const TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/><path d="M10 11v6M14 11v6"/></svg>';
+
+  const statPill = (dot, text) => h('div', { class: 'stat-pill' }, h('span', { class: 'dot ' + dot }), text);
+
+  function subjectCard(s) {
+    const first = s.temas[0];
+    const st = s.stats || computeStats(s);
+    const icon = h('div', { class: 'section-icon', 'aria-hidden': 'true', text: first.icono });
+    icon.style.background = first.iconBg;
+
+    const main = h('button', { type: 'button', class: 'subject-main' },
+      h('div', { class: 'subject-top' }, icon,
+        h('div', { class: 'subject-text' },
+          h('div', { class: 'subject-name', text: s.asignatura }),
+          s.subtitulo ? h('div', { class: 'subject-sub', text: s.subtitulo }) : null)),
+      h('div', { class: 'subject-stats' },
+        statPill('c', plural(st.temas, 'tema', 'temas')),
+        statPill('p', plural(st.conceptos, 'concepto', 'conceptos'))),
+      h('div', { class: 'subject-foot' },
+        h('span', { text: 'Actualizada ' + fmtDate(s.updatedAt) }),
+        h('span', { class: 'open-cta', text: 'Abrir' })));
+    main.addEventListener('click', () => openSubject(s.id));
+
+    const del = h('button', { type: 'button', class: 'subject-del', 'aria-label': 'Eliminar ' + s.asignatura, title: 'Eliminar' });
+    del.innerHTML = TRASH;
+    del.addEventListener('click', () => confirmDelete(s));
+
+    return h('article', { class: 'subject-card' + (S.fresh.has(s.id) ? ' fresh' : '') }, main, del);
+  }
+
+  function renderLibrary() {
+    const list = [...S.lib.values()].sort((a, b) => a.asignatura.localeCompare(b.asignatura, 'es'));
+    E.grid.replaceChildren(...list.map(subjectCard));
+    E.libHead.hidden = !list.length;
+    E.libCount.textContent = String(list.length);
+    E.empty.hidden = list.length > 0;
+    E.storageWarn.hidden = Store.persistent;
+    S.fresh = new Set();
+  }
+
+  async function confirmDelete(s) {
+    const choice = await ask({
+      title: '¿Eliminar «' + s.asignatura + '»?',
+      text: [h('p', null, 'Se borrará de este navegador. Tu archivo .json no se toca, así que puedes volver a subirlo cuando quieras.')],
+      choices: [
+        { id: 'del', label: 'Eliminar', kind: 'danger' },
+        { id: 'no', label: 'Cancelar' },
+      ],
+    });
+    if (choice !== 'del') return;
+    S.lib.delete(s.id);
+    await Store.remove(s.id);
+    renderLibrary();
+  }
+
+  /* --------------------------- informe de carga --------------------------- */
+  const RES_ICON = { ok: '✓', warn: '!', err: '✕', info: 'i' };
+
+  function resultCard(it) {
+    const card = h('div', { class: 'res ' + it.kind },
+      h('div', { class: 'res-head' },
+        h('span', { class: 'res-icon', 'aria-hidden': 'true', text: RES_ICON[it.kind] }),
+        h('div', { class: 'res-title', text: it.title })));
+    if (it.file) card.append(h('div', { class: 'res-file', text: it.file }));
+    (it.lines || []).forEach(l => card.append(h('p', { class: 'res-line', text: l })));
+    if (it.snippet) card.append(h('pre', { class: 'snippet' }, it.snippet.text + '\n', h('span', { class: 'caret', text: it.snippet.caret })));
+    if (it.list && it.list.length) card.append(h('ul', null, it.list.map(x => h('li', { text: x }))));
+    if (it.hint) card.append(h('p', { class: 'res-hint', text: it.hint }));
+    return card;
+  }
+
+  function renderReport(items) {
+    E.report.replaceChildren();
+    if (!items.length) { E.report.hidden = true; return; }
+    const close = h('button', { type: 'button', class: 'ghost-btn small', text: 'Cerrar' });
+    close.addEventListener('click', () => { E.report.hidden = true; E.report.replaceChildren(); });
+    E.report.append(
+      h('div', { class: 'report-head' }, h('div', { class: 'report-title', text: 'Resultado de la carga' }), close),
+      ...items.map(resultCard));
+    E.report.hidden = false;
+    E.report.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function errorItem(file, err) {
+    if (err instanceof LoadError) {
+      return { kind: 'err', title: err.message, file, lines: err.detail ? [err.detail] : [], snippet: err.snippet || null, list: err.warnings || [], hint: err.hint || null };
+    }
+    console.error(err);
+    return { kind: 'err', title: 'No se pudo procesar el archivo.', file, lines: [String((err && err.message) || err)] };
+  }
+
+  /* ------------------------------ subida ------------------------------ */
+  function setBusy(busy) {
+    S.busy = busy;
+    E.pick.disabled = busy;
+    E.pick.textContent = busy ? 'Leyendo…' : 'Elegir archivos';
+    E.drop.setAttribute('aria-busy', busy ? 'true' : 'false');
+  }
+
+  function fileEntries(fileList) {
+    return Array.from(fileList).map(f => {
+      const ext = (f.name.split('.').pop() || '').toLowerCase();
+      const okType = ext === 'json' || ext === 'txt' || /json|text/.test(f.type);
+      return { name: f.name, size: f.size, reject: okType ? null : '«' + f.name + '» no es un archivo .json.', read: () => f.text() };
+    });
+  }
+
+  /** Devuelve true si no hubo ningún error. */
+  async function ingest(entries) {
+    if (!entries.length || S.busy) return false;
+    setBusy(true);
+    const items = [];
+    const fresh = [];
+    try {
+      const parsed = [];
+      for (const en of entries) {
+        try {
+          if (en.reject) throw new LoadError(en.reject, { kind: 'type' });
+          if (en.size > MAX_BYTES) throw new LoadError('El archivo pesa más de 25 MB; no parece un JSON de apuntes.', { kind: 'size' });
+          const { value, notes, continues } = readJSONText(await en.read());
+          const base = en.name.replace(/\.[^.]+$/, '');
+          const raws = subjectsFromRoot(value, base);
+          raws.forEach((raw, k) => {
+            try {
+              const { subject, warnings } = normalizeSubject(raw, base);
+              parsed.push({ file: en.name, subject, warnings, notes, continues });
+            } catch (err) {
+              items.push(errorItem(raws.length > 1 ? en.name + ' · asignatura ' + (k + 1) : en.name, err));
+            }
+          });
+        } catch (err) {
+          items.push(errorItem(en.name, err));
+        }
+      }
+
+      // Varias partes de la misma asignatura subidas a la vez se combinan solas.
+      const groups = new Map();
+      for (const p of parsed) {
+        const key = nameKey(p.subject.asignatura);
+        const g = groups.get(key);
+        if (!g) {
+          groups.set(key, { key, subject: p.subject, files: [p.file], warnings: [...p.warnings], notes: [...p.notes], continues: p.continues });
+        } else {
+          g.subject = mergeSubjects(g.subject, p.subject).subject;
+          if (!g.files.includes(p.file)) g.files.push(p.file);
+          g.warnings.push(...p.warnings);
+          g.notes.push(...p.notes);
+          g.continues = p.continues;
+        }
+      }
+
+      for (const g of groups.values()) {
+        const existing = [...S.lib.values()].find(x => x.key === g.key);
+        const now = Date.now();
+        const extra = [];
+        let final;
+        let verb;
+
+        if (!existing) {
+          final = { ...g.subject, id: newId(g.subject.asignatura), key: g.key, addedAt: now, updatedAt: now };
+          verb = 'añadida';
+        } else {
+          const plan = planMerge(existing, g.subject);
+          const choice = await ask({
+            title: 'Ya tienes «' + existing.asignatura + '»',
+            text: [h('p', null,
+              'En tu biblioteca hay ', h('strong', { text: plural(existing.stats.temas, 'tema', 'temas') }),
+              '. El archivo trae ', h('strong', { text: plural(g.subject.temas.length, 'tema', 'temas') }),
+              ': ' + plural(plan.added, 'nuevo', 'nuevos') + ' y ' + plural(plan.replaced, 'que ya existe', 'que ya existen') + '.')],
+            choices: [
+              { id: 'merge', label: 'Combinar', desc: 'Añade los temas nuevos y actualiza los que coinciden por título.', kind: 'primary' },
+              { id: 'replace', label: 'Reemplazar todo', desc: 'Sustituye la asignatura guardada por este archivo.' },
+              { id: 'copy', label: 'Guardar como otra', desc: 'Crea una asignatura nueva y deja la actual como está.' },
+              { id: 'skip', label: 'Cancelar' },
+            ],
+          });
+          if (choice === 'merge') {
+            const m = mergeSubjects(existing, g.subject);
+            final = { ...m.subject, id: existing.id, key: g.key, addedAt: existing.addedAt, updatedAt: now };
+            verb = 'combinada';
+            extra.push(plural(m.added, 'tema nuevo', 'temas nuevos') + ' y ' + plural(m.replaced, 'tema actualizado', 'temas actualizados') + '.');
+          } else if (choice === 'replace') {
+            final = { ...g.subject, id: existing.id, key: g.key, addedAt: existing.addedAt, updatedAt: now };
+            verb = 'reemplazada';
+          } else if (choice === 'copy') {
+            const name = uniqueName(g.subject.asignatura, new Set([...S.lib.values()].map(x => x.key)));
+            final = { ...g.subject, asignatura: name, id: newId(name), key: nameKey(name), addedAt: now, updatedAt: now };
+            verb = 'añadida como copia';
+          } else {
+            items.push({ kind: 'info', title: '«' + g.subject.asignatura + '» no se ha cambiado.', file: g.files.join(', ') });
+            continue;
+          }
+        }
+
+        const saved = await Store.put(final);
+        S.lib.set(final.id, final);
+        fresh.push(final.id);
+
+        const st = final.stats;
+        const list = [...new Set(g.notes)];
+        if (!saved) list.unshift('No se pudo guardar en el navegador (almacenamiento bloqueado o lleno): estará disponible hasta que cierres esta pestaña.');
+        list.push(...g.warnings.slice(0, 8));
+        if (g.warnings.length > 8) list.push('… y ' + (g.warnings.length - 8) + ' avisos más.');
+        items.push({
+          kind: g.warnings.length || !saved ? 'warn' : 'ok',
+          title: '«' + final.asignatura + '» ' + verb + '.',
+          file: g.files.join(', '),
+          lines: [plural(st.temas, 'tema', 'temas') + ', ' + plural(st.conceptos, 'concepto', 'conceptos') +
+            (st.trampas ? ' y ' + plural(st.trampas, 'trampa de examen', 'trampas de examen') : '') + '.', ...extra],
+          list,
+          hint: g.continues ? 'Este archivo indica que continúa: sube también la siguiente parte y se combinará con esta.' : null,
+        });
+      }
+    } finally {
+      setBusy(false);
+    }
+
+    S.fresh = new Set(fresh);
+    renderLibrary();
+    showView('library');
+    renderReport(items);
+    return !items.some(i => i.kind === 'err');
+  }
+
+  E.pick.addEventListener('click', () => E.file.click());
+  E.file.addEventListener('change', () => {
+    const files = Array.from(E.file.files || []);
+    E.file.value = '';
+    ingest(fileEntries(files));
+  });
+
+  const setPaste = open => {
+    E.pastePanel.hidden = !open;
+    E.pasteBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) E.pasteText.focus();
+  };
+  E.pasteBtn.addEventListener('click', () => setPaste(E.pastePanel.hidden));
+  E.pasteCancel.addEventListener('click', () => setPaste(false));
+  E.pasteLoad.addEventListener('click', async () => {
+    const text = E.pasteText.value;
+    if (!text.trim()) { E.pasteText.focus(); return; }
+    const ok = await ingest([{ name: 'JSON pegado', size: text.length, read: async () => text }]);
+    if (ok) { E.pasteText.value = ''; setPaste(false); }
+  });
+
+  // Arrastrar y soltar en cualquier parte de la página (y que el navegador no abra el archivo).
+  const hasFiles = e => !!e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+  let dragDepth = 0;
+  window.addEventListener('dragenter', e => { if (!hasFiles(e)) return; e.preventDefault(); dragDepth++; E.drop.classList.add('over'); });
+  window.addEventListener('dragover', e => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+  window.addEventListener('dragleave', e => {
+    if (!hasFiles(e)) return;
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (!dragDepth) E.drop.classList.remove('over');
+  });
+  window.addEventListener('drop', e => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth = 0;
+    E.drop.classList.remove('over');
+    ingest(fileEntries(e.dataTransfer.files));
+  });
+
+  /* ------------------------------ visor ------------------------------ */
+  function renderBlock(b) {
+    switch (b.tipo) {
+      case 'answer':
+        return h('div', { class: 'answer-box' },
+          b.label ? h('div', { class: 'answer-label' }, rich(b.label)) : null,
+          h('div', { class: 'answer-text rich' }, rich(b.html)));
+      case 'blockquote':
+        return h('div', { class: 'blockquote rich' }, rich(b.html));
+      case 'error':
+        return h('div', { class: 'error-box rich' }, rich(b.html));
+      case 'formula':
+        return h('div', { class: 'formula' },
+          b.titulo ? h('div', { class: 'formula-title' }, rich(b.titulo)) : null,
+          h('div', { class: 'rich' }, rich(b.html)));
+      case 'grid2':
+        return h('div', { class: 'grid-2' }, b.columnas.map(c =>
+          h('div', { class: 'mini-card' },
+            c.titulo ? h('div', { class: 'mini-title' }, rich(c.titulo)) : null,
+            h('div', { class: 'rich' }, rich(c.html)))));
+      case 'tabla': {
+        const cols = Math.max(b.cabeceras.length, ...b.filas.map(r => r.length));
+        const idx = Array.from({ length: cols }, (_, i) => i);
+        const head = b.cabeceras.length
+          ? h('thead', null, h('tr', null, idx.map(i => h('th', null, rich(b.cabeceras[i] || '')))))
+          : null;
+        const rows = b.filas.map(r => (r.length === 1 && cols > 1
+          ? h('tr', null, h('td', { colspan: String(cols) }, rich(r[0])))
+          : h('tr', null, idx.map(i => h('td', null, rich(r[i] || ''))))));
+        return h('div', { class: 'table-wrap' }, h('table', { class: 'data-table' }, head, h('tbody', null, rows)));
+      }
+      default:
+        return null;
+    }
+  }
+
+  function buildCard(c) {
+    const body = h('div', { class: 'concept-body' });
+    const header = h('div', { class: 'concept-header', role: 'button', tabindex: '0', 'aria-expanded': 'false' },
+      h('div', { class: 'concept-q' },
+        c.tag ? h('span', { class: 'tag tag-' + c.tagColor, text: c.tag }) : null,
+        rich(c.pregunta)),
+      h('div', { class: 'toggle-icon', 'aria-hidden': 'true', text: '+' }));
+    const card = h('article', { class: 'concept-card' }, header, body);
+
+    let built = false;
+    card._setOpen = open => {
+      if (open && !built) { built = true; c.bloques.forEach(b => { const n = renderBlock(b); if (n) body.append(n); }); }
+      card.classList.toggle('open', open);
+      header.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    header.addEventListener('click', () => { S.auto.delete(card); card._setOpen(!card.classList.contains('open')); });
+    header.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); header.click(); }
+    });
+    return card;
+  }
+
+  function searchText(c) {
+    const parts = [c.tag, c.pregunta];
+    for (const b of c.bloques) {
+      if (b.html) parts.push(b.html);
+      if (b.label) parts.push(b.label);
+      if (b.titulo) parts.push(b.titulo);
+      if (b.columnas) b.columnas.forEach(k => parts.push(k.titulo || '', k.html));
+      if (b.cabeceras) parts.push(...b.cabeceras);
+      if (b.filas) b.filas.forEach(r => parts.push(...r));
+    }
+    return norm(parts.join(' '));
+  }
+
+  function buildNav(s) {
+    const pill = (id, label, full) => h('button', { type: 'button', class: 'topic-btn', 'data-topic': id, title: full || label, text: label });
+    E.pills.replaceChildren(
+      pill('all', 'Todos'),
+      ...s.temas.map(t => pill(t.id, plain(t.navLabel) || plain(t.titulo), plain(t.titulo))));
+    E.nav.classList.remove('open', 'clamp');
+    E.more.hidden = true;
+  }
+
+  function buildSections(s) {
+    S.sections = [];
+    S.cards = [];
+    const frag = document.createDocumentFragment();
+    for (const t of s.temas) {
+      const icon = h('div', { class: 'section-icon', 'aria-hidden': 'true', text: t.icono });
+      icon.style.background = t.iconBg;
+      const el = h('section', { class: 'topic-section', 'data-topic': t.id },
+        h('div', { class: 'section-header' }, icon,
+          h('h2', { class: 'section-title', text: t.titulo }),
+          h('div', { class: 'section-count', text: plural(t.conceptos.length, 'concepto', 'conceptos') })));
+      const sec = { id: t.id, el, cards: [] };
+      for (const c of t.conceptos) {
+        const card = buildCard(c);
+        el.append(card);
+        const item = { el: card, search: searchText(c) };
+        sec.cards.push(item);
+        S.cards.push(item);
+      }
+      S.sections.push(sec);
+      frag.append(el);
+    }
+    E.sections.replaceChildren(frag);
+  }
+
+  function openSubject(id) {
+    const s = S.lib.get(id);
+    if (!s) return;
+    S.subject = s;
+    S.topic = 'all';
+    S.query = '';
+    S.auto.clear();
+    E.q.value = '';
+    E.title.textContent = s.asignatura;
+    E.sub.textContent = s.subtitulo;
+    E.sub.hidden = !s.subtitulo;
+    const st = s.stats || computeStats(s);
+    E.stats.replaceChildren(...[
+      statPill('c', plural(st.temas, 'tema', 'temas')),
+      statPill('p', plural(st.conceptos, 'concepto', 'conceptos')),
+      st.trampas ? statPill('y', plural(st.trampas, 'trampa de examen', 'trampas de examen')) : null,
+    ].filter(Boolean));
+    buildNav(s);
+    buildSections(s);
+    showView('subject');
+    applyFilters();
+    requestAnimationFrame(updateNavClamp);
+  }
+
+  function applyFilters() {
+    const terms = norm(S.query).split(' ').filter(Boolean);
+    const searching = terms.length > 0;
+    let shown = 0;
+
+    for (const sec of S.sections) {
+      let n = 0;
+      for (const c of sec.cards) {
+        const match = !searching || terms.every(t => c.search.includes(t));
+        c.el.hidden = !match;
+        if (match) n++;
+      }
+      const visible = n > 0 && (searching || S.topic === 'all' || S.topic === sec.id);
+      sec.el.hidden = !visible;
+      if (visible) shown += n;
+    }
+
+    E.pills.querySelectorAll('.topic-btn').forEach(b => {
+      b.classList.toggle('active', !searching && b.dataset.topic === S.topic);
+    });
+
+    // La búsqueda abre sola las tarjetas que coinciden (si no son demasiadas) y las cierra al limpiarla.
+    const autoOpen = searching && shown <= AUTO_OPEN_MAX;
+    for (const c of S.cards) {
+      const el = c.el;
+      if (autoOpen && !el.hidden) {
+        if (!el.classList.contains('open')) { el._setOpen(true); S.auto.add(el); }
+      } else if (S.auto.has(el)) {
+        el._setOpen(false);
+        S.auto.delete(el);
+      }
+    }
+
+    E.count.textContent = searching ? plural(shown, 'resultado', 'resultados') : '';
+    E.none.hidden = !(searching && shown === 0);
+    if (!E.none.hidden) E.none.textContent = 'Nada coincide con «' + S.query.trim() + '». Prueba con otra palabra o con menos letras.';
+  }
+
+  function selectTopic(id) {
+    if (S.query) { S.query = ''; E.q.value = ''; }
+    S.topic = id;
+    applyFilters();
+    E.sections.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function updateNavClamp() {
+    if (E.subject.hidden || !S.subject) return;
+    E.nav.classList.remove('clamp');
+    const limited = E.pills.scrollHeight > 124;
+    E.nav.classList.toggle('clamp', limited);
+    E.more.hidden = !limited;
+    if (limited) setMoreLabel();
+  }
+  function setMoreLabel() {
+    const open = E.nav.classList.contains('open');
+    E.more.textContent = open ? 'Ver menos' : 'Ver los ' + (S.subject.temas.length + 1) + ' botones';
+    E.more.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  E.more.addEventListener('click', () => { E.nav.classList.toggle('open'); setMoreLabel(); });
+  window.addEventListener('resize', debounce(updateNavClamp, 150));
+
+  E.pills.addEventListener('click', e => {
+    const b = e.target.closest('.topic-btn');
+    if (b) selectTopic(b.dataset.topic);
+  });
+
+  E.q.addEventListener('input', debounce(() => { S.query = E.q.value; applyFilters(); }, 120));
+  E.q.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && E.q.value) { E.q.value = ''; S.query = ''; applyFilters(); }
+  });
+
+  const visibleCards = () => S.cards.filter(c => !c.el.hidden && !c.el.closest('[hidden]'));
+  E.openAll.addEventListener('click', () => { S.auto.clear(); visibleCards().forEach(c => c.el._setOpen(true)); });
+  E.closeAll.addEventListener('click', () => { S.auto.clear(); visibleCards().forEach(c => c.el._setOpen(false)); });
+
+  E.back.addEventListener('click', () => {
+    S.subject = null;
+    S.sections = [];
+    S.cards = [];
+    S.auto.clear();
+    E.sections.replaceChildren();
+    showView('library');
+  });
+
+  /* ------------------------------ arranque ------------------------------ */
+  (async () => {
+    const records = await Store.init();
+    records.forEach(r => { if (r && r.id && Array.isArray(r.temas) && r.temas.length) S.lib.set(r.id, r); });
+    renderLibrary();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateNavClamp);
+  })();
+})();
+</script>
+</body>
+</html>
